@@ -1,13 +1,16 @@
 import { supabase } from "./supabaseClient";
 
 export type CartItem = {
-  id: number;
+  // Keep flexible because some parts of the app use string ids and others use numbers
+  id: string | number;
   name: string;
   price: number;
   qty: number;
   image?: string;
   weight?: string;
-  category?: string;
+
+  // NOTE: We intentionally do NOT persist category into order_items
+  // because your Supabase order_items table does not have a `category` column.
 };
 
 export type ShippingInput = {
@@ -84,15 +87,14 @@ export async function createOrderInDb(args: {
   if (orderErr) return { ok: false as const, error: orderErr.message };
 
   // 3) insert items
+  // IMPORTANT: Insert ONLY columns that exist in your `order_items` table schema.
+  // Your table does NOT have `category`, so we do not include it.
   const payload = items.map((it) => ({
     order_id: orderRow.id,
-    product_id: it.id,
+    product_id: String(it.id),
     name: it.name,
-    price: it.price,
-    qty: it.qty,
-    image: it.image ?? null,
-    weight: it.weight ?? null,
-    category: it.category ?? null,
+    price: Number(it.price),
+    qty: Number(it.qty),
   }));
 
   const { error: itemsErr } = await supabase.from("order_items").insert(payload);
@@ -105,33 +107,23 @@ export async function createOrderInDb(args: {
   };
 }
 
+/**
+ * Kept only to avoid breaking imports in existing UI.
+ * This is for CONTACT / SUPPORT messaging, NOT for placing orders via WhatsApp.
+ */
 export function buildWhatsAppOrderMessage(args: {
   orderId: number;
   items: CartItem[];
   shipping: ShippingInput;
   totals: { subtotal: number; shipping: number; total: number; currency: string };
 }) {
-  const { orderId, items, shipping, totals } = args;
+  const { orderId, shipping } = args;
 
   const lines: string[] = [];
-  lines.push(`New Order ✅`);
+  lines.push("Hi, I need support.");
   lines.push(`Order ID: ${orderId}`);
-  lines.push(``);
-  lines.push(`Customer: ${shipping.full_name}`);
-  lines.push(`Email: ${shipping.email}`);
+  lines.push(`Name: ${shipping.full_name}`);
   lines.push(`Phone: ${shipping.phone}`);
-  lines.push(
-    `Address: ${shipping.address_line1}${shipping.address_line2 ? ", " + shipping.address_line2 : ""}, ${shipping.city}, ${shipping.state} ${shipping.postal_code}, ${shipping.country ?? "US"}`
-  );
-  lines.push(``);
-  lines.push(`Items:`);
-  for (const it of items) {
-    lines.push(`- ${it.name} x${it.qty} = ${totals.currency} ${it.price * it.qty}`);
-  }
-  lines.push(``);
-  lines.push(`Subtotal: ${totals.currency} ${totals.subtotal}`);
-  lines.push(`Shipping: ${totals.currency} ${totals.shipping}`);
-  lines.push(`Total: ${totals.currency} ${totals.total}`);
 
   return lines.join("\n");
 }
