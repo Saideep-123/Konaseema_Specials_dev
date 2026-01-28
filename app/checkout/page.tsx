@@ -136,15 +136,13 @@ export default function CheckoutPage() {
     if (orderErr) throw new Error(orderErr.message);
 
     const itemsPayload = cart.items.map((i) => ({
-      order_id: order.id,
-      product_id: String(i.id),
-      name: i.name,
-      price: Number(i.price),
-      qty: Number(i.qty),
-      image: i.image ?? null,
-      weight: i.weight ?? null,
-      category: i.category ?? null,
-    }));
+  order_id: order.id,
+  product_id: String(i.id),
+  name: i.name,
+  price: Number(i.price),
+  qty: Number(i.qty),
+}));
+
 
     const { error: itemsErr } = await supabase.from("order_items").insert(itemsPayload);
     if (itemsErr) throw new Error(itemsErr.message);
