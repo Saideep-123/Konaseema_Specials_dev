@@ -40,12 +40,12 @@ export default function Products({
                 onClick={() => setSelected(p)}
                 className="group bg-white rounded-2xl border border-[#e8dccb] hover:shadow-lg transition cursor-pointer"
               >
-                {/* IMAGE – FINAL, NO CROP */}
-                <div className="h-[170px] flex items-center justify-center bg-[#faf7f2] rounded-t-2xl overflow-hidden">
+                {/* IMAGE — FILLS BOX (MATCHES WORKING CARDS) */}
+                <div className="relative w-full h-[170px] overflow-hidden rounded-t-2xl bg-[#faf7f2]">
                   <img
                     src={p.image}
                     alt={p.name}
-                    className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
                     loading="lazy"
                   />
                 </div>
@@ -80,6 +80,10 @@ export default function Products({
               </div>
             ))}
           </div>
+
+          {filtered.length === 0 && (
+            <div className="mt-10 opacity-70">No products found.</div>
+          )}
         </div>
       </section>
 
