@@ -14,7 +14,7 @@ type Filters = {
 };
 
 export default function HomePage() {
-  const { addToCart } = useCart();
+  const { addItem } = useCart(); // ✅ matches original ZIP pattern
 
   const [filters, setFilters] = useState<Filters>({
     healthy: false,
@@ -50,7 +50,7 @@ export default function HomePage() {
       <main className="bg-cream pt-28 pb-16">
         <div className="max-w-7xl mx-auto px-6">
 
-          {/* ================= HERO (OLD ZIP) ================= */}
+          {/* ===== HERO (OLD ZIP) ===== */}
           <section className="grid md:grid-cols-2 gap-10 items-center mb-20">
             <div>
               <p className="text-sm font-semibold text-gold mb-2">
@@ -80,10 +80,12 @@ export default function HomePage() {
               </p>
 
               <h3 className="text-2xl font-bold text-brown">
-                Pootharekulu
+                {PRODUCTS[0].name}
               </h3>
 
-              <p className="text-sm text-brown/70 mb-3">250g</p>
+              <p className="text-sm text-brown/70 mb-3">
+                {PRODUCTS[0].weight}
+              </p>
 
               <img
                 src={PRODUCTS[0].image}
@@ -97,7 +99,7 @@ export default function HomePage() {
                 </div>
                 <button
                   className="btn-primary"
-                  onClick={() => addToCart(PRODUCTS[0])}
+                  onClick={() => addItem(PRODUCTS[0])}
                 >
                   Add to Cart
                 </button>
@@ -105,7 +107,7 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* ================= FEATURED PRODUCTS ================= */}
+          {/* ===== FEATURED PRODUCTS ===== */}
           <div className="flex items-center justify-between mb-8 relative">
             <h2 className="text-3xl font-extrabold text-brown">
               Featured Products
@@ -120,10 +122,25 @@ export default function HomePage() {
 
             {showFilter && (
               <div className="absolute right-0 top-full mt-2 premium-card p-4 z-50">
-                <label><input type="checkbox" onChange={() => toggle("healthy")} /> Healthy</label><br />
-                <label><input type="checkbox" onChange={() => toggle("bestseller")} /> Best Seller</label><br />
-                <label><input type="checkbox" onChange={() => toggle("veg")} /> Veg</label><br />
-                <label><input type="checkbox" onChange={() => toggle("nonveg")} /> Non Veg</label><br />
+                <label>
+                  <input type="checkbox" onChange={() => toggle("healthy")} />{" "}
+                  Healthy
+                </label>
+                <br />
+                <label>
+                  <input type="checkbox" onChange={() => toggle("bestseller")} />{" "}
+                  Best Seller
+                </label>
+                <br />
+                <label>
+                  <input type="checkbox" onChange={() => toggle("veg")} /> Veg
+                </label>
+                <br />
+                <label>
+                  <input type="checkbox" onChange={() => toggle("nonveg")} /> Non
+                  Veg
+                </label>
+                <br />
                 <button
                   onClick={clearAll}
                   className="mt-2 text-xs text-brown/70"
@@ -146,7 +163,7 @@ export default function HomePage() {
                 <p className="text-sm text-brown/70">₹{p.price}</p>
                 <button
                   className="btn-primary w-full mt-3"
-                  onClick={() => addToCart(p)}
+                  onClick={() => addItem(p)}
                 >
                   Add to Cart
                 </button>
