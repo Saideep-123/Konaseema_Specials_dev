@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PRODUCTS } from "./data";
 import { useCart } from "./CartContext";
 import ProductQuickView from "./ProductQuickView";
@@ -15,15 +15,20 @@ export default function Products({
   const cart = useCart();
   const [selected, setSelected] = useState<any | null>(null);
 
-  const filtered = PRODUCTS.filter((p) => {
-    const byCategory = activeCategory === "All" || p.category === activeCategory;
-    const q = searchQuery.toLowerCase();
-    const bySearch =
-      !q ||
-      p.name.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q);
-    return byCategory && bySearch;
-  });
+  const filtered = useMemo(() => {
+    const q = (searchQuery || "").trim().toLowerCase();
+
+    return PRODUCTS.filter((p) => {
+      const byCategory = activeCategory === "All" || p.category === activeCategory;
+      const bySearch =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q) ||
+        (p.weight || "").toLowerCase().includes(q);
+
+      return byCategory && bySearch;
+    });
+  }, [activeCategory, searchQuery]);
 
   return (
     <>
@@ -38,32 +43,41 @@ export default function Products({
               <div
                 key={p.id}
                 onClick={() => setSelected(p)}
-                className="group bg-white rounded-2xl border border-[#e8dccb] hover:shadow-lg transition cursor-pointer"
+                className="group bg-white rounded-2xl border border-[#e8dccb] hover:shadow-lg transition cursor-pointer overflow-hidden"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setSelected(p);
+                }}
               >
-                {/* IMAGE — FILLS BOX (MATCHES WORKING CARDS) */}
-                <div className="relative w-full h-[170px] overflow-hidden rounded-t-2xl bg-[#faf7f2]">
+                {/* IMAGE — ALWAYS FILLS THE BOX */}
+                <div className="relative w-full h-[170px] bg-[#faf7f2] overflow-hidden">
                   <img
                     src={p.image}
                     alt={p.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
                     loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
+                    onError={(e) => {
+                      // fallback image (prevents broken icon)
+                      const img = e.currentTarget;
+                      img.onerror = null;
+                      img.src = "/images/placeholder.jpg";
+                    }}
                   />
                 </div>
 
                 {/* CONTENT */}
                 <div className="p-4">
-                  <h3 className="text-[15px] font-medium leading-tight">
+                  <div className="text-[12px] text-gray-500 mb-1">{p.category}</div>
+
+                  <h3 className="text-[15px] font-medium leading-tight line-clamp-2">
                     {p.name}
                   </h3>
 
-                  <p className="text-[12px] text-gray-500 mt-1">
-                    {p.weight}
-                  </p>
+                  <p className="text-[12px] text-gray-500 mt-1">{p.weight}</p>
 
                   <div className="flex items-center justify-between mt-3">
-                    <span className="text-[15px] font-semibold">
-                      ₹{p.price}
-                    </span>
+                    <span className="text-[15px] font-semibold">₹{p.price}</span>
 
                     <button
                       onClick={(e) => {
