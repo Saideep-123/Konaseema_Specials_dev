@@ -51,7 +51,7 @@ export default function Products({
                 }}
               >
                 {/* IMAGE — ALWAYS FILLS THE BOX */}
-                <div className="relative w-full h-[170px] bg-[#faf7f2] overflow-hidden">
+                <div className="relative w-full h-[120px] bg-[#faf7f2] overflow-hidden">
                   <img
                     src={p.image}
                     alt={p.name}
