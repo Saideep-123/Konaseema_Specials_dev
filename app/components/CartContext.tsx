@@ -9,6 +9,14 @@ export type Product = {
   weight: string;
   category: string;
   image: string;
+
+  // ✅ NEW (optional) — does NOT break existing UI
+  desc?: string;              // 1-line description (optional)
+  highlights?: string[];      // at least 4 points (optional but recommended)
+
+  // ✅ OPTIONAL (for Quick View weights like 250g/500g/1kg)
+  // If not provided, Quick View can use default [250g,500g,1kg]
+  variants?: { label: string; grams?: number; multiplier: number }[];
 };
 
 export type CartItem = Product & { qty: number };
@@ -103,4 +111,3 @@ export function useCart() {
   if (!ctx) throw new Error("useCart must be used within CartProvider");
   return ctx;
 }
-
