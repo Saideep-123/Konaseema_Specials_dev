@@ -14,7 +14,7 @@ type Filters = {
 };
 
 export default function HomePage() {
-  const { addItem } = useCart(); // ✅ matches original ZIP pattern
+  const { add } = useCart(); // ✅ CORRECT API
 
   const [filters, setFilters] = useState<Filters>({
     healthy: false,
@@ -25,6 +25,7 @@ export default function HomePage() {
 
   const [showFilter, setShowFilter] = useState(false);
 
+  // same as old ZIP
   const featuredProducts = PRODUCTS.slice(0, 4);
 
   const filteredFeatured = useMemo(() => {
@@ -50,7 +51,7 @@ export default function HomePage() {
       <main className="bg-cream pt-28 pb-16">
         <div className="max-w-7xl mx-auto px-6">
 
-          {/* ===== HERO (OLD ZIP) ===== */}
+          {/* ================= HERO (OLD ZIP) ================= */}
           <section className="grid md:grid-cols-2 gap-10 items-center mb-20">
             <div>
               <p className="text-sm font-semibold text-gold mb-2">
@@ -99,7 +100,7 @@ export default function HomePage() {
                 </div>
                 <button
                   className="btn-primary"
-                  onClick={() => addItem(PRODUCTS[0])}
+                  onClick={() => add(PRODUCTS[0])} // ✅ FIXED
                 >
                   Add to Cart
                 </button>
@@ -107,7 +108,7 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* ===== FEATURED PRODUCTS ===== */}
+          {/* ================= FEATURED PRODUCTS ================= */}
           <div className="flex items-center justify-between mb-8 relative">
             <h2 className="text-3xl font-extrabold text-brown">
               Featured Products
@@ -123,13 +124,11 @@ export default function HomePage() {
             {showFilter && (
               <div className="absolute right-0 top-full mt-2 premium-card p-4 z-50">
                 <label>
-                  <input type="checkbox" onChange={() => toggle("healthy")} />{" "}
-                  Healthy
+                  <input type="checkbox" onChange={() => toggle("healthy")} /> Healthy
                 </label>
                 <br />
                 <label>
-                  <input type="checkbox" onChange={() => toggle("bestseller")} />{" "}
-                  Best Seller
+                  <input type="checkbox" onChange={() => toggle("bestseller")} /> Best Seller
                 </label>
                 <br />
                 <label>
@@ -137,8 +136,7 @@ export default function HomePage() {
                 </label>
                 <br />
                 <label>
-                  <input type="checkbox" onChange={() => toggle("nonveg")} /> Non
-                  Veg
+                  <input type="checkbox" onChange={() => toggle("nonveg")} /> Non Veg
                 </label>
                 <br />
                 <button
@@ -163,7 +161,7 @@ export default function HomePage() {
                 <p className="text-sm text-brown/70">₹{p.price}</p>
                 <button
                   className="btn-primary w-full mt-3"
-                  onClick={() => addItem(p)}
+                  onClick={() => add(p)} // ✅ FIXED
                 >
                   Add to Cart
                 </button>
