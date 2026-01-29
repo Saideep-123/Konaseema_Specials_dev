@@ -25,7 +25,6 @@ const IMG_GIFT_1 =
 export const PRODUCTS: Product[] = [
   // ---- Traditional Sweets (1-18)
   { id: "p1", name: "Pootharekulu", price: 399, weight: "250g", category: "Traditional Sweets", image: IMG_SWEET_1},
-},
   { id: "p2", name: "Kaja Sweet", price: 299, weight: "250g", category: "Traditional Sweets", image: IMG_SWEET_2 },
   { id: "p3", name: "Gavvalu", price: 249, weight: "250g", category: "Traditional Sweets", image: IMG_SWEET_3 },
   { id: "p4", name: "Bellam Pootharekulu", price: 429, weight: "250g", category: "Traditional Sweets", image: IMG_SWEET_1 },
