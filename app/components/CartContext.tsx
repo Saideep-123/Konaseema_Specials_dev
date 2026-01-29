@@ -2,34 +2,52 @@
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
+export type Variant = { label: string };
+
 export type Product = {
   id: string;
   name: string;
-  price: number;
-  weight: string;
+  weight: string; // default label shown in grid (we keep it)
   category: string;
   image: string;
 
-  // ✅ NEW (optional) — does NOT break existing UI
-  desc?: string;              // 1-line description (optional)
-  highlights?: string[];      // at least 4 points (optional but recommended)
+  // NEW: priceKey points into prices.ts
+  priceKey: string;
 
-  // ✅ OPTIONAL (for Quick View weights like 250g/500g/1kg)
-  // If not provided, Quick View can use default [250g,500g,1kg]
-  variants?: { label: string; grams?: number; multiplier: number }[];
+  // optional product details for quick view
+  desc?: string;
+  highlights?: string[];
+  variants?: Variant[]; // if not provided, quick view will show default 250g/500g/1kg
 };
 
-export type CartItem = Product & { qty: number };
+export type CartItem = {
+  id: string;
+  name: string;
+  category: string;
+  image: string;
+
+  priceKey: string;
+
+  // selected size label (e.g. 250g / 500g / 1kg / 1L / 500ml)
+  size: string;
+
+  // price per unit for this size (already converted by FX_RATE)
+  unitPrice: number;
+
+  qty: number;
+};
 
 type CartCtx = {
   items: CartItem[];
   count: number;
   total: number;
-  add: (p: Product) => void;
+
+  add: (p: Product, opts?: { size?: string; qty?: number; unitPrice?: number }) => void;
   dec: (id: string) => void;
   inc: (id: string) => void;
   remove: (id: string) => void;
   clear: () => void;
+
   isOpen: boolean;
   open: () => void;
   close: () => void;
@@ -38,7 +56,7 @@ type CartCtx = {
 
 const CartContext = createContext<CartCtx | null>(null);
 
-const STORAGE_KEY = "konaseema_cart_v1";
+const STORAGE_KEY = "konaseema_cart_v2";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -60,14 +78,39 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [items]);
 
   const count = useMemo(() => items.reduce((s, i) => s + i.qty, 0), [items]);
-  const total = useMemo(() => items.reduce((s, i) => s + i.qty * i.price, 0), [items]);
+  const total = useMemo(() => items.reduce((s, i) => s + i.qty * i.unitPrice, 0), [items]);
 
-  const add = (p: Product) => {
+  const add: CartCtx["add"] = (p, opts) => {
+    const size = opts?.size ?? p.weight ?? "250g";
+    const unitPrice = Number(opts?.unitPrice ?? 0);
+    const qtyAdd = Math.max(1, Number(opts?.qty ?? 1));
+
     setItems((prev) => {
-      const found = prev.find((x) => x.id === p.id);
-      if (found) return prev.map((x) => (x.id === p.id ? { ...x, qty: x.qty + 1 } : x));
-      return [...prev, { ...p, qty: 1 }];
+      // unique per product+size
+      const key = `${p.id}__${size}`;
+      const found = prev.find((x) => `${x.id}__${x.size}` === key);
+
+      if (found) {
+        return prev.map((x) =>
+          `${x.id}__${x.size}` === key ? { ...x, qty: x.qty + qtyAdd } : x
+        );
+      }
+
+      return [
+        ...prev,
+        {
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          image: p.image,
+          priceKey: p.priceKey,
+          size,
+          unitPrice,
+          qty: qtyAdd,
+        },
+      ];
     });
+
     setIsOpen(true);
   };
 
