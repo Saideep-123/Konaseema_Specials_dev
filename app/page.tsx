@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import { PRODUCTS } from "./data/products"; // ✅ keep your existing path
+import { PRODUCTS } from "./data"; // ✅ CORRECT import (from data.ts)
 
 type Filters = {
   healthy: boolean;
@@ -13,7 +13,6 @@ type Filters = {
 };
 
 export default function HomePage() {
-  // ✅ Multi-select filters
   const [filters, setFilters] = useState<Filters>({
     healthy: false,
     bestseller: false,
@@ -21,7 +20,7 @@ export default function HomePage() {
     nonveg: false,
   });
 
-  // Example featured selection (keep your existing logic if different)
+  // keep your existing logic if different
   const featuredProducts = PRODUCTS.slice(0, 8);
 
   const anySelected = useMemo(
@@ -30,20 +29,17 @@ export default function HomePage() {
   );
 
   const filteredFeatured = useMemo(() => {
-    // If no filter checked => show all (current behavior)
+    // No filters selected → show all (current behavior)
     if (!anySelected) return featuredProducts;
 
     return featuredProducts.filter((p: any) => {
-      // ✅ These fields can be added later
+      // These fields can be added later in data.ts
       const isHealthy = Boolean(p?.isHealthy);
       const isBestSeller = Boolean(p?.isBestSeller);
       const foodType = String(p?.foodType ?? "").toLowerCase(); // "veg" | "nonveg"
 
-      // If checkbox selected but product has no tags, it won't match (expected)
       if (filters.healthy && !isHealthy) return false;
       if (filters.bestseller && !isBestSeller) return false;
-
-      // Veg/Nonveg: allow selecting both
       if (filters.veg && foodType !== "veg") return false;
       if (filters.nonveg && foodType !== "nonveg") return false;
 
@@ -63,18 +59,19 @@ export default function HomePage() {
 
       <main className="min-h-screen bg-cream pt-28 pb-16">
         <div className="max-w-7xl mx-auto px-6">
-          {/* ===== FEATURED PRODUCTS HEADER + FILTER (RIGHT) ===== */}
+
+          {/* ===== FEATURED PRODUCTS HEADER + FILTER ===== */}
           <div className="flex items-start justify-between gap-6 mb-6">
             <h2 className="text-2xl md:text-3xl font-extrabold text-brown">
               Featured Products
             </h2>
 
-            {/* ✅ Checkbox Filter Panel (multi-select) */}
-            <div className="min-w-[260px] max-w-[320px] premium-card p-4">
+            {/* ✅ Checkbox Filter (Right side) */}
+            <div className="min-w-[260px] card p-4">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-sm font-extrabold text-brown">
+                <span className="text-sm font-extrabold text-brown">
                   Filter
-                </div>
+                </span>
 
                 <button
                   type="button"
@@ -108,20 +105,19 @@ export default function HomePage() {
                 />
               </div>
 
-              {/* small hint when tags not present yet */}
               {anySelected && filteredFeatured.length === 0 && (
                 <div className="mt-3 text-xs text-brown/70">
-                  No products match yet. Add tags later (isHealthy/isBestSeller/foodType).
+                  No products match. Add tags later in <code>data.ts</code>.
                 </div>
               )}
             </div>
           </div>
 
-          {/* ===== FEATURED PRODUCTS GRID (UNCHANGED UI CARD STYLE) ===== */}
+          {/* ===== FEATURED PRODUCTS GRID ===== */}
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredFeatured.map((p: any) => (
               <div key={p.id} className="card p-4">
-                {/* Keep your existing product card UI */}
+                {/* 🔹 KEEP YOUR EXISTING PRODUCT CARD UI */}
                 <img
                   src={p.img}
                   alt={p.name}
@@ -129,10 +125,14 @@ export default function HomePage() {
                 />
                 <div className="font-bold text-brown">{p.name}</div>
                 <div className="text-brown/70 mb-2">₹{p.price}</div>
-                <button className="btn-primary w-full">Add to Cart</button>
+
+                <button className="btn-primary w-full">
+                  Add to Cart
+                </button>
               </div>
             ))}
           </div>
+
         </div>
       </main>
 
@@ -158,7 +158,9 @@ function Checkbox({
         onChange={onChange}
         className="h-4 w-4 accent-[#173b2c]"
       />
-      <span className="text-sm font-semibold text-brown">{label}</span>
+      <span className="text-sm font-semibold text-brown">
+        {label}
+      </span>
     </label>
   );
 }
