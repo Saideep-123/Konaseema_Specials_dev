@@ -40,12 +40,12 @@ export default function Products({
                 onClick={() => setSelected(p)}
                 className="group bg-white rounded-2xl border border-[#e8dccb] hover:shadow-lg transition cursor-pointer"
               >
-                {/* IMAGE – FIXED & ALIGNED */}
-                <div className="overflow-hidden rounded-t-2xl">
+                {/* IMAGE – FINAL, NO CROP */}
+                <div className="h-[170px] flex items-center justify-center bg-[#faf7f2] rounded-t-2xl overflow-hidden">
                   <img
                     src={p.image}
                     alt={p.name}
-                    className="w-full h-[160px] object-cover group-hover:scale-[1.04] transition"
+                    className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
                     loading="lazy"
                   />
                 </div>
