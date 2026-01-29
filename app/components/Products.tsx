@@ -40,14 +40,17 @@ export default function Products({
                 onClick={() => setSelected(p)}
                 className="group bg-white rounded-2xl border border-[#e8dccb] hover:shadow-lg transition cursor-pointer"
               >
+                {/* IMAGE – FIXED & ALIGNED */}
                 <div className="overflow-hidden rounded-t-2xl">
                   <img
                     src={p.image}
                     alt={p.name}
                     className="w-full h-[160px] object-cover group-hover:scale-[1.04] transition"
+                    loading="lazy"
                   />
                 </div>
 
+                {/* CONTENT */}
                 <div className="p-4">
                   <h3 className="text-[15px] font-medium leading-tight">
                     {p.name}
@@ -68,6 +71,7 @@ export default function Products({
                         cart.add(p);
                       }}
                       className="text-[12px] px-3 py-1 rounded-full border border-[#c9a36a] hover:bg-[#c9a36a] hover:text-white transition"
+                      type="button"
                     >
                       Add
                     </button>
