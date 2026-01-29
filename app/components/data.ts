@@ -1,3 +1,4 @@
+
 // app/components/data.ts
 import type { Product } from "./CartContext";
 import { PRICE_BY_ID, type PackSize } from "./prices";
@@ -885,12 +886,11 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
     category: "Podis",
     image: "/images/Velluli Karvepaku Podi.jpg",
     highlights: [
-      "Garlic + curry leaves podi (v
-elluli + karvepaku)",
-      "Strong aroma with roasted spice notes",
-      "Perfect with hot rice and ghee",
-      "Shelf life: up to 3 months (airtight packed)",
-    ],
+  "Garlic + curry leaves podi (velluli + karvepaku)",
+  "Strong aroma with roasted spice notes",
+  "Perfect with hot rice and ghee",
+  "Shelf life: up to 3 months (airtight packed)",
+],
   },
   {
     id: "p60",
