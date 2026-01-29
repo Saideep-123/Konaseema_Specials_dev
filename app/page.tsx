@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import { PRODUCTS } from "./data"; // ✅ CORRECT import (from data.ts)
+import { PRODUCTS } from "./components/data";
+ // ✅ CORRECT import (from data.ts)
 
 type Filters = {
   healthy: boolean;
