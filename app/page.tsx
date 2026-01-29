@@ -1,112 +1,79 @@
-"use client";
+{/* ================= HERO SECTION (ORIGINAL ZIP) ================= */}
+<section className="grid md:grid-cols-2 gap-10 items-center mb-20">
 
-import { useMemo, useState } from "react";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import { PRODUCTS } from "./components/data";
+  {/* LEFT CONTENT */}
+  <div>
+    <p className="text-sm font-semibold text-gold mb-2">
+      Traditional • Hygienic • Fresh
+    </p>
 
-type Filters = {
-  healthy: boolean;
-  bestseller: boolean;
-  veg: boolean;
-  nonveg: boolean;
-};
+    <h1 className="text-4xl md:text-6xl font-extrabold text-brown leading-tight">
+      Authentic <span className="text-gold">Konaseema</span> Sweets
+    </h1>
 
-export default function HomePage() {
-  const [filters, setFilters] = useState<Filters>({
-    healthy: false,
-    bestseller: false,
-    veg: false,
-    nonveg: false,
-  });
+    <p className="mt-5 text-brown/70 max-w-lg">
+      Classic recipes from Konaseema — made with pure ingredients and
+      packed carefully for delivery.
+    </p>
 
-  const [open, setOpen] = useState(false);
+    <div className="flex gap-4 mt-6">
+      <a href="/products" className="btn-primary">
+        Shop Products
+      </a>
 
-  const featured = PRODUCTS.slice(0, 4);
+      <a
+        href="https://wa.me/91XXXXXXXXXX"
+        target="_blank"
+        className="px-5 py-3 rounded-lg bg-green-600 text-white font-semibold"
+      >
+        Contact on WhatsApp
+      </a>
+    </div>
 
-  const filtered = useMemo(() => {
-    return featured.filter((p) => {
-      if (filters.healthy && !p.isHealthy) return false;
-      if (filters.bestseller && !p.isBestSeller) return false;
-      if (filters.veg && p.foodType !== "veg") return false;
-      if (filters.nonveg && p.foodType !== "nonveg") return false;
-      return true;
-    });
-  }, [filters, featured]);
+    {/* FEATURES */}
+    <div className="grid grid-cols-3 gap-6 mt-10">
+      <div>
+        <div className="font-bold text-brown">Fresh</div>
+        <div className="text-xs text-brown/70">Packed Daily</div>
+      </div>
+      <div>
+        <div className="font-bold text-brown">Pan-India</div>
+        <div className="text-xs text-brown/70">Shipping</div>
+      </div>
+      <div>
+        <div className="font-bold text-brown">Premium</div>
+        <div className="text-xs text-brown/70">Gift Boxes</div>
+      </div>
+    </div>
+  </div>
 
-  const toggle = (k: keyof Filters) =>
-    setFilters((p) => ({ ...p, [k]: !p[k] }));
+  {/* RIGHT – OUR SPECIAL ITEM */}
+  <div className="bg-white rounded-3xl p-6 shadow-sm">
+    <p className="text-sm font-semibold text-gold mb-2">
+      Our Special Item
+    </p>
 
-  return (
-    <>
-      <Navbar />
+    <h3 className="text-2xl font-bold text-brown">
+      Pootharekulu
+    </h3>
 
-      <main className="bg-cream pt-28 pb-16">
-        <div className="max-w-7xl mx-auto px-6">
+    <p className="text-sm text-brown/70 mb-3">250g</p>
 
-          {/* HEADER */}
-          <div className="flex justify-between items-start mb-8">
-            <h2 className="text-3xl font-extrabold text-brown">
-              Featured Products
-            </h2>
+    <img
+      src="https://images.pexels.com/photos/3026808/pexels-photo-3026808.jpeg?auto=compress&cs=tinysrgb&w=1200"
+      alt="Pootharekulu"
+      className="rounded-2xl w-full h-56 object-cover mb-4"
+    />
 
-            {/* FILTER DROPDOWN */}
-            <div className="relative">
-              <button
-                onClick={() => setOpen(!open)}
-                className="border px-4 py-2 rounded-lg text-sm font-bold"
-              >
-                Filter
-              </button>
+    <div className="flex items-center justify-between">
+      <div className="text-xl font-bold text-brown">₹399</div>
+      <button className="btn-primary">Add to Cart</button>
+    </div>
 
-              {open && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl p-4 z-50">
-                  <FilterItem label="Healthy" onClick={() => toggle("healthy")} />
-                  <FilterItem label="Best Seller" onClick={() => toggle("bestseller")} />
-                  <FilterItem label="Veg" onClick={() => toggle("veg")} />
-                  <FilterItem label="Non Veg" onClick={() => toggle("nonveg")} />
-                </div>
-              )}
-            </div>
-          </div>
+    <p className="text-xs text-brown/60 mt-2">
+      Checkout happens from Cart.
+    </p>
+  </div>
 
-          {/* GRID (UNCHANGED LOOK) */}
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {filtered.map((p) => (
-              <div key={p.id} className="card p-4">
-                <img
-                  src={p.image}
-                  alt={p.name}
-                  className="w-full h-40 object-cover rounded-xl mb-3"
-                />
-                <h3 className="font-bold">{p.name}</h3>
-                <p className="text-sm text-brown/70">₹{p.price}</p>
-                <button className="btn-primary w-full mt-3">
-                  Add to Cart
-                </button>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </main>
-
-      <Footer />
-    </>
-  );
-}
-
-function FilterItem({
-  label,
-  onClick,
-}: {
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <label className="flex items-center gap-2 cursor-pointer py-1">
-      <input type="checkbox" onChange={onClick} />
-      <span className="text-sm">{label}</span>
-    </label>
-  );
-}
+</section>
+{/* ================= END HERO ================= */}
