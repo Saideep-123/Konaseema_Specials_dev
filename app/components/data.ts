@@ -2,10 +2,6 @@
 import type { Product } from "./CartContext";
 import { PRICE_BY_ID, type PackSize } from "./prices";
 
-export type ProductData = Product & {
-  highlights: string[];
-};
-
 export const CATEGORIES = [
   "All Products",
   "Sweets",
@@ -16,27 +12,60 @@ export const CATEGORIES = [
   "Veg Pickles",
   "Non-Veg Pickles",
   "Gift Boxes",
-];
+] as const;
+
+type ProductWithHighlights = Product & { highlights: string[] };
+
+/** Normalize common weights to match PackSize keys in prices.ts */
+function normalizePack(weight: string): PackSize | null {
+  const w = (weight || "").trim();
+
+  // direct supported
+  if (
+    w === "250g" ||
+    w === "500g" ||
+    w === "1kg" ||
+    w === "200g" ||
+    w === "1L" ||
+    w === "500ml" ||
+    w === "Assorted"
+  ) {
+    return w as PackSize;
+  }
+
+  return null;
+}
 
 function priceFor(id: string, weight: string): number {
   const table = PRICE_BY_ID[id];
   if (!table) return 0;
 
-  // weight in your data is like "250g", "200g", "1L", "500ml", "Assorted"
-  const key = weight as PackSize;
-  return table[key] ?? 0;
+  const pack = normalizePack(weight);
+
+  // 1) exact match
+  if (pack && table[pack] != null) return table[pack] as number;
+
+  // 2) fallbacks: 200g -> 250g, 500ml -> 500g
+  if (pack === "200g" && table["250g"] != null) return table["250g"] as number;
+  if (pack === "500ml" && table["500g"] != null) return table["500g"] as number;
+
+  // 3) any available price
+  const first = Object.values(table).find((v) => typeof v === "number");
+  return typeof first === "number" ? first : 0;
 }
 
-export const PRODUCTS: ProductData[] = [
-
-  // ---- Sweets
+/**
+ * IMPORTANT:
+ * Put your full product content here (p1..p98) exactly like you shared,
+ * but WITHOUT manually setting price. We'll compute it below.
+ */
+const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p1",
     name: "Kova",
     weight: "250g",
     category: "Sweets",
     image: "/images/Kova.jpg",
-    price: priceFor("p1", "250g"),
     highlights: [
       "Rich, slow-cooked milk sweet with a soft texture",
       "Made in small batches for freshness",
@@ -44,13 +73,13 @@ export const PRODUCTS: ProductData[] = [
       "Best before: 10–15 days (airtight packed)",
     ],
   },
-  {
+{
     id: "p2",
     name: "Bellam Laddu (Nuvvu/Rava type)",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Bellam Laddu (Nuvvu-Rava type).jpg",
-    price: priceFor("p2", "250g"),
     highlights: [
       "Traditional jaggery laddu with nuvvu/rava blend",
       "Natural sweetness with an authentic homemade taste",
@@ -61,10 +90,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p3",
     name: "Dry Kajjikayalu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Dry Kajjikayalu.jpg",
-    price: priceFor("p3", "250g"),
     highlights: [
       "Crispy sweet pockets with traditional stuffing",
       "Lightly fried for crunch and aroma",
@@ -75,10 +104,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p4",
     name: "Rava Laddu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Rava Laddu.jpg",
-    price: priceFor("p4", "250g"),
     highlights: [
       "Classic rava laddu with ghee-rich flavor",
       "Soft bite with roasted aroma",
@@ -89,10 +118,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p5",
     name: "Minapa Sunnundalu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Minapa Sunnundalu.jpg",
-    price: priceFor("p5", "250g"),
     highlights: [
       "Protein-rich urad dal laddus (Andhra special)",
       "Roasted minapa for deep nutty flavor",
@@ -103,10 +132,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p6",
     name: "Kakinada Kaja (Madatha)",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Kakinada Kaja (Madatha).jpg",
-    price: priceFor("p6", "250g"),
     highlights: [
       "Iconic Kakinada-style layered kaja",
       "Crispy outside with syrupy sweetness",
@@ -117,10 +146,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p7",
     name: "Pootharekulu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Pootharekulu.jpg",
-    price: priceFor("p7", "250g"),
     highlights: [
       "Paper-thin sweet rolls (Godavari specialty)",
       "Jaggery/ghee filling with delicate layers",
@@ -131,10 +160,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p8",
     name: "Arisallu / Nuvvula Arisallu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Arisallu - Nuvvula Arisallu.jpg",
-    price: priceFor("p8", "250g"),
     highlights: [
       "Traditional ariselu made with rice & jaggery",
       "Nuvvula variant adds roasted sesame aroma",
@@ -145,10 +174,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p9",
     name: "Boondi Laddu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Boondi Laddu.jpg",
-    price: priceFor("p9", "250g"),
     highlights: [
       "Soft laddus made from fine boondi pearls",
       "Ghee-forward taste with festive feel",
@@ -159,10 +188,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p10",
     name: "Thakudhu Laddu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Thakudhu Laddu.jpg",
-    price: priceFor("p10", "250g"),
     highlights: [
       "Traditional laddu variety with authentic taste",
       "Prepared in small batches for freshness",
@@ -173,10 +202,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p11",
     name: "Kobbari Undha (Laddu)",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Kobbari Undha (Laddu).jpg",
-    price: priceFor("p11", "250g"),
     highlights: [
       "Coconut laddu made with fresh kobbari",
       "Sweet, aromatic and satisfying texture",
@@ -187,10 +216,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p12",
     name: "Pootharekulu (Palm sugar type)",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Pootharekulu (Palm sugar type).jpg",
-    price: priceFor("p12", "250g"),
     highlights: [
       "Pootharekulu made with palm sugar sweetness",
       "Delicate paper layers with rich filling",
@@ -201,10 +230,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p13",
     name: "Kobbari Arisallu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Kobbari Arisallu.jpg",
-    price: priceFor("p13", "250g"),
     highlights: [
       "Ariselu with coconut flavor (kobbari twist)",
       "Rice & jaggery base with festive aroma",
@@ -215,10 +244,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p14",
     name: "Dry Fruit Laddu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Dry Fruit Laddu.jpg",
-    price: priceFor("p14", "250g"),
     highlights: [
       "Premium dry fruits and nuts in every bite",
       "Naturally rich and energy-dense sweet",
@@ -229,10 +258,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p15",
     name: "Halwa",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Halwa.jpg",
-    price: priceFor("p15", "250g"),
     highlights: [
       "Classic halwa with smooth, rich texture",
       "Slow-cooked for deep flavor",
@@ -243,10 +272,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p16",
     name: "Bellam Gavvalu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Bellam Gavvalu.jpg",
-    price: priceFor("p16", "250g"),
     highlights: [
       "Crispy gavvalu coated in jaggery (bellam)",
       "Traditional snack-sweet with crunchy bite",
@@ -257,10 +286,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p17",
     name: "Bellam Kommulu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Bellam Kommulu.jpg",
-    price: priceFor("p17", "250g"),
     highlights: [
       "Crunchy bellam kommulu with jaggery sweetness",
       "Traditional bite-size sweet snack",
@@ -271,10 +300,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p18",
     name: "Ragi Bellam Laddu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Ragi Bellam Laddu.jpg",
-    price: priceFor("p18", "250g"),
     highlights: [
       "Ragi-based laddu sweetened with jaggery",
       "Wholesome and energy-rich",
@@ -285,10 +314,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p19",
     name: "Nuvvula Laddu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Nuvvula Laddu.jpg",
-    price: priceFor("p19", "250g"),
     highlights: [
       "Sesame laddu with roasted nuvvu aroma",
       "Jaggery sweetness with crunchy texture",
@@ -299,10 +328,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p20",
     name: "Panirulu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Panirulu.jpg",
-    price: priceFor("p20", "250g"),
     highlights: [
       "Traditional sweet bites made for festive occasions",
       "Soft inside with a rich sweet flavor",
@@ -313,10 +342,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p21",
     name: "Gormithilu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Gormithilu.jpg",
-    price: priceFor("p21", "250g"),
     highlights: [
       "Traditional sweet snack with crunchy texture",
       "Made using authentic Andhra recipe",
@@ -327,10 +356,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p22",
     name: "Pongadalu",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Pongadalu.jpg",
-    price: priceFor("p22", "250g"),
     highlights: [
       "Traditional sweet snack with homestyle taste",
       "Prepared fresh and packed hygienically",
@@ -341,10 +370,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p23",
     name: "Chalimidi",
+    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Chalimidi.jpg",
-    price: priceFor("p23", "250g"),
     highlights: [
       "Andhra festive sweet made with rice flour & jaggery",
       "Mild ghee aroma with soft, rich texture",
@@ -357,10 +386,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p24",
     name: "Chekkalu",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Chekkalu.jpg",
-    price: priceFor("p24", "250g"),
     highlights: [
       "Crispy rice-flour snack with traditional spices",
       "Perfect with tea/coffee",
@@ -371,10 +400,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p25",
     name: "Murukulu",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Murukulu.jpg",
-    price: priceFor("p25", "250g"),
     highlights: [
       "Classic spiral snack with crunchy bite",
       "Lightly spiced and freshly fried",
@@ -385,10 +414,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p26",
     name: "Chekodhi",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Chekodhi.jpg",
-    price: priceFor("p26", "250g"),
     highlights: [
       "Crispy chekodhi with authentic masala flavor",
       "Ideal for tea-time snacking",
@@ -399,10 +428,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p27",
     name: "Ribbon Pakodi (Akku Pakodi)",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Ribbon Pakodi (Akku Pakodi).jpg",
-    price: priceFor("p27", "250g"),
     highlights: [
       "Ribbon-shaped crunchy snack with spice blend",
       "Crisp texture and homestyle taste",
@@ -413,10 +442,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p28",
     name: "Karam Boondi",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Karam Boondi.jpg",
-    price: priceFor("p28", "250g"),
     highlights: [
       "Spicy boondi pearls with bold karam flavor",
       "Perfect for mixture and snacking",
@@ -427,10 +456,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p29",
     name: "Ganapathi Special Mixture",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Ganapathi Special Mixture.jpg",
-    price: priceFor("p29", "250g"),
     highlights: [
       "Signature mixture with crunchy components",
       "Balanced spice and flavor",
@@ -441,10 +470,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p30",
     name: "Karam Jantikalu",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Karam Jantikalu.jpg",
-    price: priceFor("p30", "250g"),
     highlights: [
       "Spicy jantikalu with crisp bite",
       "Traditional Andhra snack",
@@ -455,10 +484,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p31",
     name: "Kommulu",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Kommulu.jpg",
-    price: priceFor("p31", "250g"),
     highlights: [
       "Crunchy kommulu with traditional seasoning",
       "Perfect for tea-time munching",
@@ -469,10 +498,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p32",
     name: "Garlic Murukulu (Vammu Pusa)",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Garlic Murukulu (Vammu Pusa).jpg",
-    price: priceFor("p32", "250g"),
     highlights: [
       "Garlic-forward murukulu with bold flavor",
       "Crispy texture with vammu aroma",
@@ -483,10 +512,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p33",
     name: "Masala Pusa",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Masala Pusa.jpg",
-    price: priceFor("p33", "250g"),
     highlights: [
       "Crispy pusa snack with masala blend",
       "Light and crunchy bite",
@@ -497,10 +526,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p34",
     name: "Special Mixture",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Special Mixture.jpg",
-    price: priceFor("p34", "250g"),
     highlights: [
       "Classic mixture with crunchy variety",
       "Balanced spice and taste",
@@ -511,10 +540,10 @@ export const PRODUCTS: ProductData[] = [
   {
     id: "p35",
     name: "Chitti Appadalu",
+    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Chitti Appadalu.jpg",
-    price: priceFor("p35", "250g"),
     highlights: [
       "Mini appadalu with crisp bite",
       "Lightly spiced traditional snack",
@@ -522,7 +551,904 @@ export const PRODUCTS: ProductData[] = [
       "Best before: 30–45 days (airtight packed)",
     ],
   },
+  {
+    id: "p36",
+    name: "Nagaram Gavvalu",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Nagaram Gavvalu.jpg",
+    highlights: [
+      "Crunchy gavvalu snack with traditional spices",
+      "Crisp bite with homestyle taste",
+      "Great for tea-time",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p37",
+    name: "Nylaram Chekkalu",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Nylaram Chekkalu.jpg",
+    highlights: [
+      "Chekkalu style snack with authentic flavor",
+      "Crispy and freshly prepared",
+      "Perfect for tea-time munching",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p38",
+    name: "Mamidi Thondri",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Mamidi Thondri.jpg",
+    highlights: [
+      "Tangy mango thondri-style snack",
+      "Traditional Andhra taste and spice",
+      "Great for snack lovers",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p39",
+    name: "Thati Chapa",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Thati Chapa.jpg",
+    highlights: [
+      "Traditional thati chapa crunch snack",
+      "Crisp texture with homestyle seasoning",
+      "Perfect for tea-time",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p40",
+    name: "Bellam Jeedilu",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Bellam Jeedilu.jpg",
+    highlights: [
+      "Jaggery-coated crunchy snack bites",
+      "Sweet-crunch balance and aroma",
+      "Great as tea-time sweet snack",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p41",
+    name: "Nuvvula Jeedilu",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Nuvvula Jeedilu.jpg",
+    highlights: [
+      "Sesame-based crunchy snack bites",
+      "Roasted nuvvu aroma with crisp texture",
+      "Perfect for tea-time snacking",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p42",
+    name: "Chinna Boondi Aachu",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Chinna Boondi Aachu.jpg",
+    highlights: [
+      "Crunchy boondi snack with traditional flavor",
+      "Great for kids and family",
+      "Fresh batch prepared for crunch",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p43",
+    name: "Jeedi Pappu Aachu",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Jeedi Pappu Aachu.jpg",
+    highlights: [
+      "Cashew-based crunchy snack",
+      "Rich bite with traditional seasoning",
+      "Perfect for festive snacking",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p44",
+    name: "Pallila Aachu",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Pallila Aachu.jpg",
+    highlights: [
+      "Peanut-based crunchy snack bites",
+      "Traditional taste and crisp texture",
+      "Great for tea-time munching",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p45",
+    name: "Masala Cashew",
+    price: 0,
+    weight: "200g",
+    category: "Snacks",
+    image: "/images/Masala Cashew.jpg",
+    highlights: [
+      "Premium cashews roasted with masala spices",
+      "Crunchy, bold and flavorful",
+      "Perfect for gifting and snacking",
+      "Best before: 2–3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p46",
+    name: "Pepper Cashew",
+    price: 0,
+    weight: "200g",
+    category: "Snacks",
+    image: "/images/Pepper Cashew.jpg",
+    highlights: [
+      "Premium cashews with pepper spice kick",
+      "Crunchy roast and bold flavor",
+      "Great with tea and snacks",
+      "Best before: 2–3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p47",
+    name: "Masala Batani (Kabuli Chana)",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Masala Batani (Kabuli Chana).jpg",
+    highlights: [
+      "Roasted kabuli chana coated with masala",
+      "Protein-rich crunchy snack",
+      "Perfect for munching anytime",
+      "Best before: 2–3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p48",
+    name: "Onion Chekodhi",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Onion Chekodhi.jpg",
+    highlights: [
+      "Chekodhi with onion-forward flavor",
+      "Crispy bite with masala seasoning",
+      "Perfect for tea-time snack",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p49",
+    name: "Gulabi Jantikalu",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Gulabi Jantikalu.jpg",
+    highlights: [
+      "Traditional jantikalu with crunchy bite",
+      "Balanced spice and aroma",
+      "Perfect for sharing and guests",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p50",
+    name: "Ringulu",
+    price: 0,
+    weight: "250g",
+    category: "Snacks",
+    image: "/images/Ringulu.jpg",
+    highlights: [
+      "Ring-shaped crunchy snack",
+      "Lightly spiced and crisp texture",
+      "Great for tea-time munching",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
 
-  // (Keep your remaining products the same pattern...)
-  // IMPORTANT: Continue using: price: priceFor("<id>", "<weight>")
+  // ---- Healthy Snacks
+  {
+    id: "p51",
+    name: "Ragi Ringulu",
+    price: 0,
+    weight: "250g",
+    category: "Healthy Snacks",
+    image: "/images/Ragi Ringulu.jpg",
+    highlights: [
+      "Ragi-based crunchy rings (wholesome snack)",
+      "Fiber-rich and satisfying bite",
+      "Lightly spiced for daily snacking",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p52",
+    name: "Ragi Jantikalu",
+    price: 0,
+    weight: "250g",
+    category: "Healthy Snacks",
+    image: "/images/Ragi Jantikalu.jpg",
+    highlights: [
+      "Ragi twist on traditional jantikalu",
+      "Wholesome crunch with mild spice",
+      "Great for guilt-free snacking",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p53",
+    name: "Ragi Chekkalu",
+    price: 0,
+    weight: "250g",
+    category: "Healthy Snacks",
+    image: "/images/Ragi Chekkalu.jpg",
+    highlights: [
+      "Ragi chekkalu with crisp texture",
+      "Wholesome and fiber-rich snack",
+      "Perfect for tea-time",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p54",
+    name: "Beetroot Jantikalu",
+    price: 0,
+    weight: "250g",
+    category: "Healthy Snacks",
+    image: "/images/Beetroot Jantikalu.jpg",
+    highlights: [
+      "Beetroot-infused crunchy jantikalu",
+      "Colorful snack with mild seasoning",
+      "Great for kids and families",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+  {
+    id: "p55",
+    name: "Beetroot Chekkalu",
+    price: 0,
+    weight: "250g",
+    category: "Healthy Snacks",
+    image: "/images/Beetroot Chekkalu.jpg",
+    highlights: [
+      "Beetroot chekkalu with crisp bite",
+      "Colorful and tasty snack option",
+      "Perfect for tea-time munching",
+      "Best before: 30–45 days (airtight packed)",
+    ],
+  },
+
+  // ---- Podis
+  {
+    id: "p56",
+    name: "Karvepaku Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Karvepaku Podi.jpg",
+    highlights: [
+      "Curry-leaves podi with roasted lentils & spices",
+      "Aromatic, earthy and flavorful",
+      "Best with ghee for idli/dosa/rice",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p57",
+    name: "Mulaga Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Mulaga Podi.jpg",
+    highlights: [
+      "Traditional gunpowder podi (spicy & aromatic)",
+      "Roasted lentils & spice blend, stone-ground",
+      "Perfect with ghee/oil for idli/dosa/rice",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p58",
+    name: "Karam Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Karam Podi.jpg",
+    highlights: [
+      "Spicy karam podi with bold chili flavor",
+      "Roasted lentils and spices for depth",
+      "Best as a side with rice, idli, dosa",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p59",
+    name: "Velluli Karvepaku Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Velluli Karvepaku Podi.jpg",
+    highlights: [
+      "Garlic + curry leaves podi (v
+elluli + karvepaku)",
+      "Strong aroma with roasted spice notes",
+      "Perfect with hot rice and ghee",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p60",
+    name: "Sonti Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Sonti Podi.jpg",
+    highlights: [
+      "Dry ginger (sonti) podi with warming flavor",
+      "Traditional recipe with roasted lentils & spices",
+      "Great with rice, ghee, and curd",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p61",
+    name: "Kandi Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Kandi Podi.jpg",
+    highlights: [
+      "Toor dal (kandi) podi with roasted aroma",
+      "Classic Andhra side for rice and ghee",
+      "Balanced spice and nutty flavor",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p62",
+    name: "Usiri Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Usiri Podi.jpg",
+    highlights: [
+      "Amla (usiri) podi with tangy notes",
+      "Traditional blend with roasted spices",
+      "Tasty with rice and ghee/oil",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p63",
+    name: "Nuvvula Karam Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Nuvvula Karam Podi.jpg",
+    highlights: [
+      "Sesame (nuvvu) + karam podi combo",
+      "Roasted sesame aroma with spicy kick",
+      "Perfect with hot rice and ghee",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p64",
+    name: "Daniyalu Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Daniyalu Podi.jpg",
+    highlights: [
+      "Coriander (daniyalu) podi with fresh aroma",
+      "Mild, flavorful roasted spice blend",
+      "Great with rice, ghee and curd",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p65",
+    name: "Tilakota Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Tilakota Podi.jpg",
+    highlights: [
+      "Traditional tilakota podi blend",
+      "Roasted spices for deep flavor",
+      "Ideal side with hot rice and ghee",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p66",
+    name: "Avise Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Avise Podi.jpg",
+    highlights: [
+      "Flaxseed (avise) podi with nutty taste",
+      "Wholesome roasted seed + spice blend",
+      "Best with rice and ghee/oil",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p67",
+    name: "Kakara Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Kakara Podi.jpg",
+    highlights: [
+      "Bitter gourd (kakara) podi blend",
+      "Traditional roasted spice mix",
+      "Great as a side with rice and ghee",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p68",
+    name: "Nuvvula Podi (Telaga Pindi)",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Nuvvula Podi (Telaga Pindi).jpg",
+    highlights: [
+      "Sesame podi (telaga pindi) with roasted aroma",
+      "Rich and nutty flavor",
+      "Perfect with hot rice and ghee",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+  {
+    id: "p69",
+    name: "Miriyala Podi",
+    price: 0,
+    weight: "200g",
+    category: "Podis",
+    image: "/images/Miriyala Podi.jpg",
+    highlights: [
+      "Pepper (miriyalu) podi with bold spice",
+      "Warming flavor and roasted notes",
+      "Great with rice, ghee and curd",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
+  },
+
+  // ---- Oils & Ghee
+  {
+    id: "p70",
+    name: "Nuvvula Nune",
+    price: 0,
+    weight: "1L",
+    category: "Oils & Ghee",
+    image: "/images/Nuvvula Nune.jpg",
+    highlights: [
+      "Pure sesame oil with rich aroma",
+      "Ideal for cooking, tempering and pickles",
+      "Traditional processing for authentic taste",
+      "Shelf life: 6–9 months (store cool & dry)",
+    ],
+  },
+  {
+    id: "p71",
+    name: "Kobbari Nune",
+    price: 0,
+    weight: "1L",
+    category: "Oils & Ghee",
+    image: "/images/Kobbari Nune.jpg",
+    highlights: [
+      "Pure coconut oil with natural aroma",
+      "Great for cooking and traditional recipes",
+      "Unblended, clear and fresh",
+      "Shelf life: 6–9 months (store cool & dry)",
+    ],
+  },
+  {
+    id: "p72",
+    name: "Groundnut Oil",
+    price: 0,
+    weight: "1L",
+    category: "Oils & Ghee",
+    image: "/images/Groundnut Oil.jpg",
+    highlights: [
+      "Pure groundnut oil with nutty aroma",
+      "Perfect for frying and everyday cooking",
+      "Traditional processing for taste",
+      "Shelf life: 6–9 months (store cool & dry)",
+    ],
+  },
+  {
+    id: "p73",
+    name: "Ghee (Cow)",
+    price: 0,
+    weight: "500ml",
+    category: "Oils & Ghee",
+    image: "/images/Ghee (Cow).jpg",
+    highlights: [
+      "Pure cow ghee with rich aroma",
+      "Perfect for sweets, rice and cooking",
+      "Traditional slow-processed taste",
+      "Shelf life: 6–9 months (store cool & dry)",
+    ],
+  },
+  {
+    id: "p74",
+    name: "Ghee (Buffalo)",
+    price: 0,
+    weight: "500ml",
+    category: "Oils & Ghee",
+    image: "/images/Ghee (Buffalo).jpg",
+    highlights: [
+      "Pure buffalo ghee with strong aroma",
+      "Rich texture ideal for cooking & sweets",
+      "Traditional processing for authentic taste",
+      "Shelf life: 6–9 months (store cool & dry)",
+    ],
+  },
+
+  // ---- Veg Pickles
+  {
+    id: "p75",
+    name: "Gongura",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Gongura.jpg",
+    highlights: [
+      "Tangy gongura leaves pickle (Andhra classic)",
+      "Made with fresh leaves and spice blend",
+      "Best with rice, ghee and curd",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p76",
+    name: "Avakaya",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Avakaya.jpg",
+    highlights: [
+      "Authentic mango avakaya pickle",
+      "Bold spice with traditional oil tempering",
+      "Perfect with hot rice and ghee",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p77",
+    name: "Mixed Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Mixed Pickle.jpg",
+    highlights: [
+      "Mixed vegetables pickle with homestyle spice",
+      "Balanced tang and heat",
+      "Great side for meals",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p78",
+    name: "Magaya",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Magaya.jpg",
+    highlights: [
+      "Traditional sun-dried mango magaya",
+      "Deep, tangy flavor with spice blend",
+      "Perfect with rice and curd",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p79",
+    name: "Allam Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Allam Pickle.jpg",
+    highlights: [
+      "Spicy ginger pickle with bold flavor",
+      "Perfect with idli, dosa, rice",
+      "Authentic Andhra-style recipe",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p80",
+    name: "Tomato Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Tomato Pickle.jpg",
+    highlights: [
+      "Tangy tomato pickle with roasted spices",
+      "Great side for meals and snacks",
+      "Homestyle masala blend",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p81",
+    name: "Usirikaya Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Usirikaya Pickle.jpg",
+    highlights: [
+      "Amla (usirikaya) pickle with tangy bite",
+      "Traditional spice blend and oil tempering",
+      "Great with rice and curd",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p82",
+    name: "Chinthakaya Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Chinthakaya Pickle.jpg",
+    highlights: [
+      "Raw tamarind (chinthakaya) pickle",
+      "Bold tang with traditional spice mix",
+      "Perfect with hot rice",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p83",
+    name: "Cauliflower",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Cauliflower.jpg",
+    highlights: [
+      "Cauliflower pickle with crunchy pieces",
+      "Spicy and tangy Andhra-style masala",
+      "Great side for meals",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p84",
+    name: "Lemon",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Lemon.jpg",
+    highlights: [
+      "Classic lemon pickle with tangy zest",
+      "Traditional spice blend and oil tempering",
+      "Perfect with curd rice and meals",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p85",
+    name: "Kothimeera",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Kothimeera.jpg",
+    highlights: [
+      "Coriander (kothimeera) pickle with fresh aroma",
+      "Bold spice and tang balance",
+      "Great with rice and snacks",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p86",
+    name: "Karvepaku",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Karvepaku.jpg",
+    highlights: [
+      "Curry leaves pickle with aromatic flavor",
+      "Traditional Andhra-style recipe",
+      "Great with rice and dosa",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p87",
+    name: "Dosakaya",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Dosakaya.jpg",
+    highlights: [
+      "Dosakaya pickle with homestyle spice",
+      "Balanced tang and heat",
+      "Perfect side for meals",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p88",
+    name: "Mulakkaya Pachadi",
+    price: 0,
+    weight: "250g",
+    category: "Veg Pickles",
+    image: "/images/Mulakkaya Pachadi.jpg",
+    highlights: [
+      "Drumstick (mulakkaya) pachadi style pickle",
+      "Traditional masala with tangy-spicy taste",
+      "Great with rice and meals",
+      "Shelf life: 2–3 months (refrigerate after opening)",
+    ],
+  },
+
+  // ---- Non-Veg Pickles
+  {
+    id: "p89",
+    name: "Chicken Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Non-Veg Pickles",
+    image: "/images/Chicken Pickle.jpg",
+    highlights: [
+      "Spicy chicken pickle with authentic masala",
+      "Slow-cooked for deep flavor",
+      "Great with rice and dosas",
+      "Shelf life: 15–30 days (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p90",
+    name: "Gongura Chicken Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Non-Veg Pickles",
+    image: "/images/Gongura Chicken Pickle.jpg",
+    highlights: [
+      "Chicken pickle with tangy gongura twist",
+      "Bold spice and sour balance",
+      "Perfect with hot rice",
+      "Shelf life: 15–30 days (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p91",
+    name: "Mutton Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Non-Veg Pickles",
+    image: "/images/Mutton Pickle.jpg",
+    highlights: [
+      "Spicy mutton pickle with rich masala",
+      "Slow-cooked for deep flavor",
+      "Great with rice and meals",
+      "Shelf life: 15–30 days (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p92",
+    name: "Gongura Mutton Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Non-Veg Pickles",
+    image: "/images/Gongura Mutton Pickle.jpg",
+    highlights: [
+      "Mutton pickle with tangy gongura flavor",
+      "Bold spice blend and rich taste",
+      "Perfect with hot rice and ghee",
+      "Shelf life: 15–30 days (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p93",
+    name: "Prawns Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Non-Veg Pickles",
+    image: "/images/Prawns Pickle.jpg",
+    highlights: [
+      "Spicy prawns pickle with coastal masala",
+      "Slow-cooked for deep flavor",
+      "Great with rice and dosa",
+      "Shelf life: 15–30 days (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p94",
+    name: "Gongura Prawns Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Non-Veg Pickles",
+    image: "/images/Gongura Prawns Pickle.jpg",
+    highlights: [
+      "Prawns pickle with tangy gongura twist",
+      "Spicy coastal-style masala",
+      "Perfect with hot rice",
+      "Shelf life: 15–30 days (refrigerate after opening)",
+    ],
+  },
+  {
+    id: "p95",
+    name: "Crab Pickle",
+    price: 0,
+    weight: "250g",
+    category: "Non-Veg Pickles",
+    image: "/images/Crab Pickle.jpg",
+    highlights: [
+      "Spicy crab pickle with rich coastal masala",
+      "Slow-cooked for deep flavor",
+      "Best enjoyed with hot rice",
+      "Shelf life: 15–30 days (refrigerate after opening)",
+    ],
+  },
+
+  // ---- Gift Boxes
+  {
+    id: "p96",
+    name: "Sweet Combo Box (Small)",
+    price: 0,
+    weight: "Assorted",
+    category: "Gift Boxes",
+    image: "/images/Sweet Combo Box (Small).jpg",
+    highlights: [
+      "Assorted sweets selection for gifting",
+      "Perfect for festivals and celebrations",
+      "Neatly packed for safe delivery",
+      "Contents may vary based on availability",
+    ],
+  },
+  {
+    id: "p97",
+    name: "Sweet Combo Box (Medium)",
+    price: 0,
+    weight: "Assorted",
+    category: "Gift Boxes",
+    image: "/images/Sweet Combo Box (Medium).jpg",
+    highlights: [
+      "Medium assorted sweets hamper",
+      "Ideal for family gifting and festivals",
+      "Hygienic packing with safe delivery",
+      "Contents may vary based on availability",
+    ],
+  },
+  {
+    id: "p98",
+    name: "Festive Gift Hamper",
+    price: 0,
+    weight: "Assorted",
+    category: "Gift Boxes",
+    image: "/images/Festive Gift Hamper.jpg",
+    highlights: [
+      "Premium festive hamper with assorted items",
+      "Perfect for gifting during celebrations",
+      "Neatly packed for safe delivery",
+      "Contents may vary based on availability",
+    ],
+  },
 ];
+
+export const PRODUCTS: ProductWithHighlights[] = BASE_PRODUCTS.map((p) => ({
+  ...p,
+  price: priceFor(p.id, p.weight),
+}));
