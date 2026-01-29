@@ -149,3 +149,6 @@ export const PRICES: Record<string, PriceTier> = {
   prawns_pickle: { "250g": 400, "500g": 800, "1kg": 1600 },
   gongura_prawns_pickle: { "250g": 475, "500g": 950, "1kg": 1900 },
 };
+
+
+export { PRICES_BY_ID as PRICE_BY_ID };
