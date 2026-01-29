@@ -833,19 +833,20 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: "p59",
-    name: "Velluli Karvepaku Podi",
-    price: 0,
-    weight: "200g",
-    category: "Podis",
-    image: "/images/Velluli Karvepaku Podi.jpg",
-    highlights: [
-      "Garlic + curry leaves podi (v
-elluli + karvepaku)",
-      "Strong aroma with roasted spice notes",
-      "Perfect with hot rice and ghee",
-      "Shelf life: up to 3 months (airtight packed)",
-    ],
+  
+  id: "p59",
+  name: "Velluli Karvepaku Podi",
+  price: 0,
+  weight: "200g",
+  category: "Podis",
+  image: "/images/Velluli Karvepaku Podi.jpg",
+  highlights: [
+    "Garlic + curry leaves podi (velluli + karvepaku)",
+    "Strong aroma with roasted spice notes",
+    "Perfect with hot rice and ghee",
+    "Shelf life: up to 3 months (airtight packed)",
+  ],
+
   },
   {
     id: "p60",
