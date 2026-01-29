@@ -1,4 +1,3 @@
-
 // app/components/data.ts
 import type { Product } from "./CartContext";
 import { PRICE_BY_ID, type PackSize } from "./prices";
@@ -15,13 +14,12 @@ export const CATEGORIES = [
   "Gift Boxes",
 ] as const;
 
-type ProductWithHighlights = Product & { highlights: string[] };
+export type ProductWithHighlights = Product & { highlights: string[] };
 
 /** Normalize common weights to match PackSize keys in prices.ts */
 function normalizePack(weight: string): PackSize | null {
   const w = (weight || "").trim();
 
-  // direct supported
   if (
     w === "250g" ||
     w === "500g" ||
@@ -33,7 +31,6 @@ function normalizePack(weight: string): PackSize | null {
   ) {
     return w as PackSize;
   }
-
   return null;
 }
 
@@ -46,9 +43,8 @@ function priceFor(id: string, weight: string): number {
   // 1) exact match
   if (pack && table[pack] != null) return table[pack] as number;
 
-  // 2) fallbacks: 200g -> 250g, 500ml -> 500g
+  // 2) fallback: 200g -> 250g if not provided
   if (pack === "200g" && table["250g"] != null) return table["250g"] as number;
-  if (pack === "500ml" && table["500g"] != null) return table["500g"] as number;
 
   // 3) any available price
   const first = Object.values(table).find((v) => typeof v === "number");
@@ -57,10 +53,11 @@ function priceFor(id: string, weight: string): number {
 
 /**
  * IMPORTANT:
- * Put your full product content here (p1..p98) exactly like you shared,
- * but WITHOUT manually setting price. We'll compute it below.
+ * No `price` field here.
+ * Price is computed from prices.ts below.
  */
-const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
+const BASE_PRODUCTS: Array<Omit<ProductWithHighlights, "price">> = [
+  // ---- Sweets
   {
     id: "p1",
     name: "Kova",
@@ -74,10 +71,9 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
       "Best before: 10–15 days (airtight packed)",
     ],
   },
-{
+  {
     id: "p2",
     name: "Bellam Laddu (Nuvvu/Rava type)",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Bellam Laddu (Nuvvu-Rava type).jpg",
@@ -91,7 +87,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p3",
     name: "Dry Kajjikayalu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Dry Kajjikayalu.jpg",
@@ -105,7 +100,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p4",
     name: "Rava Laddu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Rava Laddu.jpg",
@@ -119,7 +113,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p5",
     name: "Minapa Sunnundalu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Minapa Sunnundalu.jpg",
@@ -133,7 +126,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p6",
     name: "Kakinada Kaja (Madatha)",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Kakinada Kaja (Madatha).jpg",
@@ -147,7 +139,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p7",
     name: "Pootharekulu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Pootharekulu.jpg",
@@ -161,7 +152,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p8",
     name: "Arisallu / Nuvvula Arisallu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Arisallu - Nuvvula Arisallu.jpg",
@@ -175,7 +165,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p9",
     name: "Boondi Laddu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Boondi Laddu.jpg",
@@ -189,7 +178,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p10",
     name: "Thakudhu Laddu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Thakudhu Laddu.jpg",
@@ -203,7 +191,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p11",
     name: "Kobbari Undha (Laddu)",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Kobbari Undha (Laddu).jpg",
@@ -217,7 +204,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p12",
     name: "Pootharekulu (Palm sugar type)",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Pootharekulu (Palm sugar type).jpg",
@@ -231,7 +217,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p13",
     name: "Kobbari Arisallu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Kobbari Arisallu.jpg",
@@ -245,7 +230,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p14",
     name: "Dry Fruit Laddu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Dry Fruit Laddu.jpg",
@@ -259,7 +243,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p15",
     name: "Halwa",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Halwa.jpg",
@@ -273,7 +256,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p16",
     name: "Bellam Gavvalu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Bellam Gavvalu.jpg",
@@ -287,7 +269,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p17",
     name: "Bellam Kommulu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Bellam Kommulu.jpg",
@@ -301,7 +282,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p18",
     name: "Ragi Bellam Laddu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Ragi Bellam Laddu.jpg",
@@ -315,7 +295,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p19",
     name: "Nuvvula Laddu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Nuvvula Laddu.jpg",
@@ -329,7 +308,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p20",
     name: "Panirulu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Panirulu.jpg",
@@ -343,7 +321,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p21",
     name: "Gormithilu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Gormithilu.jpg",
@@ -357,7 +334,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p22",
     name: "Pongadalu",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Pongadalu.jpg",
@@ -371,7 +347,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p23",
     name: "Chalimidi",
-    price: 0,
     weight: "250g",
     category: "Sweets",
     image: "/images/Chalimidi.jpg",
@@ -387,7 +362,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p24",
     name: "Chekkalu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Chekkalu.jpg",
@@ -401,7 +375,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p25",
     name: "Murukulu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Murukulu.jpg",
@@ -415,7 +388,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p26",
     name: "Chekodhi",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Chekodhi.jpg",
@@ -429,7 +401,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p27",
     name: "Ribbon Pakodi (Akku Pakodi)",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Ribbon Pakodi (Akku Pakodi).jpg",
@@ -443,7 +414,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p28",
     name: "Karam Boondi",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Karam Boondi.jpg",
@@ -457,7 +427,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p29",
     name: "Ganapathi Special Mixture",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Ganapathi Special Mixture.jpg",
@@ -471,7 +440,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p30",
     name: "Karam Jantikalu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Karam Jantikalu.jpg",
@@ -485,7 +453,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p31",
     name: "Kommulu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Kommulu.jpg",
@@ -499,7 +466,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p32",
     name: "Garlic Murukulu (Vammu Pusa)",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Garlic Murukulu (Vammu Pusa).jpg",
@@ -513,7 +479,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p33",
     name: "Masala Pusa",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Masala Pusa.jpg",
@@ -527,7 +492,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p34",
     name: "Special Mixture",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Special Mixture.jpg",
@@ -541,7 +505,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p35",
     name: "Chitti Appadalu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Chitti Appadalu.jpg",
@@ -555,7 +518,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p36",
     name: "Nagaram Gavvalu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Nagaram Gavvalu.jpg",
@@ -569,7 +531,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p37",
     name: "Nylaram Chekkalu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Nylaram Chekkalu.jpg",
@@ -583,7 +544,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p38",
     name: "Mamidi Thondri",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Mamidi Thondri.jpg",
@@ -597,7 +557,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p39",
     name: "Thati Chapa",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Thati Chapa.jpg",
@@ -611,7 +570,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p40",
     name: "Bellam Jeedilu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Bellam Jeedilu.jpg",
@@ -625,7 +583,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p41",
     name: "Nuvvula Jeedilu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Nuvvula Jeedilu.jpg",
@@ -639,7 +596,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p42",
     name: "Chinna Boondi Aachu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Chinna Boondi Aachu.jpg",
@@ -653,7 +609,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p43",
     name: "Jeedi Pappu Aachu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Jeedi Pappu Aachu.jpg",
@@ -667,7 +622,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p44",
     name: "Pallila Aachu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Pallila Aachu.jpg",
@@ -681,7 +635,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p45",
     name: "Masala Cashew",
-    price: 0,
     weight: "200g",
     category: "Snacks",
     image: "/images/Masala Cashew.jpg",
@@ -695,7 +648,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p46",
     name: "Pepper Cashew",
-    price: 0,
     weight: "200g",
     category: "Snacks",
     image: "/images/Pepper Cashew.jpg",
@@ -709,7 +661,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p47",
     name: "Masala Batani (Kabuli Chana)",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Masala Batani (Kabuli Chana).jpg",
@@ -723,7 +674,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p48",
     name: "Onion Chekodhi",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Onion Chekodhi.jpg",
@@ -737,7 +687,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p49",
     name: "Gulabi Jantikalu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Gulabi Jantikalu.jpg",
@@ -751,7 +700,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p50",
     name: "Ringulu",
-    price: 0,
     weight: "250g",
     category: "Snacks",
     image: "/images/Ringulu.jpg",
@@ -767,7 +715,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p51",
     name: "Ragi Ringulu",
-    price: 0,
     weight: "250g",
     category: "Healthy Snacks",
     image: "/images/Ragi Ringulu.jpg",
@@ -781,7 +728,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p52",
     name: "Ragi Jantikalu",
-    price: 0,
     weight: "250g",
     category: "Healthy Snacks",
     image: "/images/Ragi Jantikalu.jpg",
@@ -795,7 +741,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p53",
     name: "Ragi Chekkalu",
-    price: 0,
     weight: "250g",
     category: "Healthy Snacks",
     image: "/images/Ragi Chekkalu.jpg",
@@ -809,7 +754,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p54",
     name: "Beetroot Jantikalu",
-    price: 0,
     weight: "250g",
     category: "Healthy Snacks",
     image: "/images/Beetroot Jantikalu.jpg",
@@ -823,7 +767,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p55",
     name: "Beetroot Chekkalu",
-    price: 0,
     weight: "250g",
     category: "Healthy Snacks",
     image: "/images/Beetroot Chekkalu.jpg",
@@ -839,7 +782,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p56",
     name: "Karvepaku Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Karvepaku Podi.jpg",
@@ -853,7 +795,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p57",
     name: "Mulaga Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Mulaga Podi.jpg",
@@ -867,7 +808,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p58",
     name: "Karam Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Karam Podi.jpg",
@@ -881,21 +821,19 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p59",
     name: "Velluli Karvepaku Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Velluli Karvepaku Podi.jpg",
     highlights: [
-  "Garlic + curry leaves podi (velluli + karvepaku)",
-  "Strong aroma with roasted spice notes",
-  "Perfect with hot rice and ghee",
-  "Shelf life: up to 3 months (airtight packed)",
-],
+      "Garlic + curry leaves podi (velluli + karvepaku)",
+      "Strong aroma with roasted spice notes",
+      "Perfect with hot rice and ghee",
+      "Shelf life: up to 3 months (airtight packed)",
+    ],
   },
   {
     id: "p60",
     name: "Sonti Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Sonti Podi.jpg",
@@ -909,7 +847,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p61",
     name: "Kandi Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Kandi Podi.jpg",
@@ -923,7 +860,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p62",
     name: "Usiri Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Usiri Podi.jpg",
@@ -937,7 +873,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p63",
     name: "Nuvvula Karam Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Nuvvula Karam Podi.jpg",
@@ -951,7 +886,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p64",
     name: "Daniyalu Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Daniyalu Podi.jpg",
@@ -965,7 +899,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p65",
     name: "Tilakota Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Tilakota Podi.jpg",
@@ -979,7 +912,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p66",
     name: "Avise Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Avise Podi.jpg",
@@ -993,7 +925,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p67",
     name: "Kakara Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Kakara Podi.jpg",
@@ -1007,7 +938,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p68",
     name: "Nuvvula Podi (Telaga Pindi)",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Nuvvula Podi (Telaga Pindi).jpg",
@@ -1021,7 +951,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p69",
     name: "Miriyala Podi",
-    price: 0,
     weight: "200g",
     category: "Podis",
     image: "/images/Miriyala Podi.jpg",
@@ -1037,7 +966,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p70",
     name: "Nuvvula Nune",
-    price: 0,
     weight: "1L",
     category: "Oils & Ghee",
     image: "/images/Nuvvula Nune.jpg",
@@ -1051,7 +979,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p71",
     name: "Kobbari Nune",
-    price: 0,
     weight: "1L",
     category: "Oils & Ghee",
     image: "/images/Kobbari Nune.jpg",
@@ -1065,7 +992,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p72",
     name: "Groundnut Oil",
-    price: 0,
     weight: "1L",
     category: "Oils & Ghee",
     image: "/images/Groundnut Oil.jpg",
@@ -1079,7 +1005,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p73",
     name: "Ghee (Cow)",
-    price: 0,
     weight: "500ml",
     category: "Oils & Ghee",
     image: "/images/Ghee (Cow).jpg",
@@ -1093,7 +1018,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p74",
     name: "Ghee (Buffalo)",
-    price: 0,
     weight: "500ml",
     category: "Oils & Ghee",
     image: "/images/Ghee (Buffalo).jpg",
@@ -1109,7 +1033,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p75",
     name: "Gongura",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Gongura.jpg",
@@ -1123,7 +1046,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p76",
     name: "Avakaya",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Avakaya.jpg",
@@ -1137,7 +1059,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p77",
     name: "Mixed Pickle",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Mixed Pickle.jpg",
@@ -1151,7 +1072,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p78",
     name: "Magaya",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Magaya.jpg",
@@ -1165,7 +1085,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p79",
     name: "Allam Pickle",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Allam Pickle.jpg",
@@ -1179,7 +1098,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p80",
     name: "Tomato Pickle",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Tomato Pickle.jpg",
@@ -1193,7 +1111,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p81",
     name: "Usirikaya Pickle",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Usirikaya Pickle.jpg",
@@ -1207,7 +1124,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p82",
     name: "Chinthakaya Pickle",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Chinthakaya Pickle.jpg",
@@ -1221,7 +1137,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p83",
     name: "Cauliflower",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Cauliflower.jpg",
@@ -1235,7 +1150,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p84",
     name: "Lemon",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Lemon.jpg",
@@ -1249,7 +1163,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p85",
     name: "Kothimeera",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Kothimeera.jpg",
@@ -1263,7 +1176,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p86",
     name: "Karvepaku",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Karvepaku.jpg",
@@ -1277,7 +1189,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p87",
     name: "Dosakaya",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Dosakaya.jpg",
@@ -1291,7 +1202,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p88",
     name: "Mulakkaya Pachadi",
-    price: 0,
     weight: "250g",
     category: "Veg Pickles",
     image: "/images/Mulakkaya Pachadi.jpg",
@@ -1307,7 +1217,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p89",
     name: "Chicken Pickle",
-    price: 0,
     weight: "250g",
     category: "Non-Veg Pickles",
     image: "/images/Chicken Pickle.jpg",
@@ -1321,7 +1230,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p90",
     name: "Gongura Chicken Pickle",
-    price: 0,
     weight: "250g",
     category: "Non-Veg Pickles",
     image: "/images/Gongura Chicken Pickle.jpg",
@@ -1335,7 +1243,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p91",
     name: "Mutton Pickle",
-    price: 0,
     weight: "250g",
     category: "Non-Veg Pickles",
     image: "/images/Mutton Pickle.jpg",
@@ -1349,7 +1256,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p92",
     name: "Gongura Mutton Pickle",
-    price: 0,
     weight: "250g",
     category: "Non-Veg Pickles",
     image: "/images/Gongura Mutton Pickle.jpg",
@@ -1363,7 +1269,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p93",
     name: "Prawns Pickle",
-    price: 0,
     weight: "250g",
     category: "Non-Veg Pickles",
     image: "/images/Prawns Pickle.jpg",
@@ -1377,7 +1282,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p94",
     name: "Gongura Prawns Pickle",
-    price: 0,
     weight: "250g",
     category: "Non-Veg Pickles",
     image: "/images/Gongura Prawns Pickle.jpg",
@@ -1391,7 +1295,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p95",
     name: "Crab Pickle",
-    price: 0,
     weight: "250g",
     category: "Non-Veg Pickles",
     image: "/images/Crab Pickle.jpg",
@@ -1407,7 +1310,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p96",
     name: "Sweet Combo Box (Small)",
-    price: 0,
     weight: "Assorted",
     category: "Gift Boxes",
     image: "/images/Sweet Combo Box (Small).jpg",
@@ -1421,7 +1323,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p97",
     name: "Sweet Combo Box (Medium)",
-    price: 0,
     weight: "Assorted",
     category: "Gift Boxes",
     image: "/images/Sweet Combo Box (Medium).jpg",
@@ -1435,7 +1336,6 @@ const BASE_PRODUCTS: Omit<ProductWithHighlights, "price">[] = [
   {
     id: "p98",
     name: "Festive Gift Hamper",
-    price: 0,
     weight: "Assorted",
     category: "Gift Boxes",
     image: "/images/Festive Gift Hamper.jpg",
