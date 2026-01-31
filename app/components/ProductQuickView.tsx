@@ -112,13 +112,14 @@ export default function ProductQuickView({ product, onClose, onAdd }: Props) {
     <div className="fixed inset-0 z-[9999]">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
-      <div className="absolute inset-0 flex items-center justify-center p-4">
+      {/* ✅ Mobile fix: scrollable overlay (so quick view can scroll on phone) */}
+      <div className="absolute inset-0 overflow-y-auto p-4 overscroll-contain [-webkit-overflow-scrolling:touch]">
         <div
-          className="w-full max-w-4xl rounded-2xl bg-[#fffaf2] border border-[#e8dccb] shadow-2xl overflow-hidden"
+          className="mx-auto my-6 w-full max-w-4xl rounded-2xl bg-[#fffaf2] border border-[#e8dccb] shadow-2xl overflow-hidden max-h-[calc(100dvh-3rem)]"
           role="dialog"
           aria-modal="true"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 min-h-0">
             {/* Image */}
             <div className="relative bg-[#faf7f2]">
               <div className="relative w-full h-[320px] md:h-full min-h-[320px] overflow-hidden">
@@ -132,7 +133,7 @@ export default function ProductQuickView({ product, onClose, onAdd }: Props) {
             </div>
 
             {/* Details */}
-            <div className="p-6 md:p-7 relative">
+            <div className="p-6 md:p-7 relative min-h-0 md:overflow-y-auto md:max-h-[calc(100dvh-3rem)] [-webkit-overflow-scrolling:touch]">
               <button
                 type="button"
                 onClick={onClose}
