@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCart } from "../components/CartContext";
@@ -8,36 +8,23 @@ import { supabase } from "../lib/supabaseClient";
 
 const WHATSAPP_NUMBER = "7989301401";
 
-type Shipping = {
-  fullName: string;
-  email: string;
-  phone: string;
-  country: string;
-  address1: string;
-  address2: string;
-  city: string;
-  state: string;
-  zip: string;
-  deliveryNotes: string;
-};
-
 export default function CheckoutPage() {
   const cart = useCart();
 
-  const [shipping, setShipping] = useState<Shipping>({
-    fullName: "",
+  /* ---------------- ADDRESS ---------------- */
+  const [address, setAddress] = useState({
+    full_name: "",
     email: "",
     phone: "",
-    country: "India",
-    address1: "",
-    address2: "",
+    address_line1: "",
+    address_line2: "",
     city: "",
     state: "",
-    zip: "",
-    deliveryNotes: "",
+    postal_code: "",
+    country: "India",
   });
 
-  /* ---------------- COUPON STATE ---------------- */
+  /* ---------------- COUPON ---------------- */
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
@@ -47,7 +34,6 @@ export default function CheckoutPage() {
     (s: number, it: any) => s + it.price * it.qty,
     0
   );
-
   const total = Math.max(0, subtotal - discount);
 
   /* ---------------- APPLY COUPON ---------------- */
@@ -57,14 +43,14 @@ export default function CheckoutPage() {
 
     if (!coupon.trim()) return;
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("coupons")
       .select("*")
       .eq("code", coupon.trim().toUpperCase())
       .eq("is_active", true)
       .single();
 
-    if (error || !data) {
+    if (!data) {
       setCouponMsg("Invalid or expired coupon");
       return;
     }
@@ -96,19 +82,11 @@ export default function CheckoutPage() {
       return;
     }
 
-    const { data: address } = await supabase
+    const { data: addr } = await supabase
       .from("addresses")
       .insert({
         user_id: userData.user.id,
-        full_name: shipping.fullName,
-        email: shipping.email,
-        phone: shipping.phone,
-        address_line1: shipping.address1,
-        address_line2: shipping.address2 || null,
-        city: shipping.city,
-        state: shipping.state,
-        postal_code: shipping.zip,
-        country: shipping.country,
+        ...address,
       })
       .select("id")
       .single();
@@ -117,25 +95,25 @@ export default function CheckoutPage() {
       .from("orders")
       .insert({
         user_id: userData.user.id,
-        address_id: address.id,
+        address_id: addr.id,
         subtotal,
-        total,
-        coupon_code: coupon || null,
         discount_amount: discount,
+        coupon_code: coupon || null,
+        total,
         status: "pending",
       })
       .select("id")
       .single();
 
-    const items = cart.items.map((i: any) => ({
-      order_id: order.id,
-      product_id: i.id,
-      name: i.name,
-      price: i.price,
-      qty: i.qty,
-    }));
-
-    await supabase.from("order_items").insert(items);
+    await supabase.from("order_items").insert(
+      cart.items.map((i: any) => ({
+        order_id: order.id,
+        product_id: i.id,
+        name: i.name,
+        price: i.price,
+        qty: i.qty,
+      }))
+    );
 
     cart.clear();
 
@@ -150,9 +128,10 @@ export default function CheckoutPage() {
   return (
     <>
       <Navbar />
+
       <main className="min-h-screen bg-cream pt-28 pb-16">
         <div className="max-w-6xl mx-auto px-5">
-          <h1 className="text-4xl font-extrabold mb-8">Checkout</h1>
+          <h1 className="text-4xl font-bold mb-8">Checkout</h1>
 
           <div className="grid lg:grid-cols-2 gap-8">
             {/* ORDER SUMMARY */}
@@ -175,11 +154,7 @@ export default function CheckoutPage() {
                     value={coupon}
                     onChange={(e) => setCoupon(e.target.value)}
                   />
-                  <button
-                    className="btn-secondary"
-                    type="button"
-                    onClick={applyCoupon}
-                  >
+                  <button className="btn-secondary" onClick={applyCoupon}>
                     Apply
                   </button>
                 </div>
@@ -208,9 +183,31 @@ export default function CheckoutPage() {
               </div>
             </section>
 
-            {/* SHIPPING */}
+            {/* ADDRESS BLOCK */}
             <section className="card p-6">
-              <h2 className="text-xl font-bold mb-4">Shipping Details</h2>
+              <h2 className="text-xl font-bold mb-4">Shipping Address</h2>
+
+              {[
+                ["full_name", "Full Name"],
+                ["email", "Email"],
+                ["phone", "Phone"],
+                ["address_line1", "Address Line 1"],
+                ["address_line2", "Address Line 2"],
+                ["city", "City"],
+                ["state", "State"],
+                ["postal_code", "Postal Code"],
+              ].map(([k, label]) => (
+                <input
+                  key={k}
+                  placeholder={label}
+                  className="w-full mb-3 px-3 py-2 border rounded-xl"
+                  value={(address as any)[k]}
+                  onChange={(e) =>
+                    setAddress({ ...address, [k]: e.target.value })
+                  }
+                />
+              ))}
+
               <button
                 className="btn-primary w-full mt-4"
                 onClick={placeOrder}
@@ -221,6 +218,7 @@ export default function CheckoutPage() {
           </div>
         </div>
       </main>
+
       <Footer />
     </>
   );
