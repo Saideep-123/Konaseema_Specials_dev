@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { PRODUCTS } from "./data";
 import { useCart } from "./CartContext";
-import ProductQuickView from "./ProductQuickView";
+import ProductQuickView, { ProductLike } from "./ProductQuickView";
 
 export default function Products({
   activeCategory,
@@ -13,7 +13,7 @@ export default function Products({
   searchQuery: string;
 }) {
   const cart = useCart();
-  const [selected, setSelected] = useState<any | null>(null);
+  const [selected, setSelected] = useState<ProductLike | null>(null);
 
   const filtered = useMemo(() => {
     const q = (searchQuery || "").trim().toLowerCase();
@@ -30,6 +30,13 @@ export default function Products({
     });
   }, [activeCategory, searchQuery]);
 
+  const suggestions = useMemo(() => {
+    if (!selected) return [];
+    return PRODUCTS.filter(
+      (p) => p.category === selected.category && p.id !== selected.id
+    ).slice(0, 8);
+  }, [selected]);
+
   return (
     <>
       <section className="px-6 pb-24" id="products">
@@ -42,15 +49,15 @@ export default function Products({
             {filtered.map((p) => (
               <div
                 key={p.id}
-                onClick={() => setSelected(p)}
+                onClick={() => setSelected(p as any)}
                 className="group bg-white rounded-2xl border border-[#e8dccb] hover:shadow-lg transition cursor-pointer overflow-hidden"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") setSelected(p);
+                  if (e.key === "Enter" || e.key === " ") setSelected(p as any);
                 }}
               >
-                {/* IMAGE — ALWAYS FILLS THE BOX */}
+                {/* IMAGE */}
                 <div className="relative w-full h-[150px] bg-[#faf7f2] overflow-hidden">
                   <img
                     src={p.image}
@@ -58,7 +65,6 @@ export default function Products({
                     loading="lazy"
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
                     onError={(e) => {
-                      // fallback image (prevents broken icon)
                       const img = e.currentTarget;
                       img.onerror = null;
                       img.src = "/images/placeholder.jpg";
@@ -82,7 +88,7 @@ export default function Products({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        cart.add(p);
+                        cart.add(p as any);
                       }}
                       className="text-[12px] px-3 py-1 rounded-full border border-[#c9a36a] hover:bg-[#c9a36a] hover:text-white transition"
                       type="button"
@@ -105,8 +111,14 @@ export default function Products({
       {selected && (
         <ProductQuickView
           product={selected}
+          suggestions={suggestions}
+          onOpenSuggestion={(p) => setSelected(p)}
           onClose={() => setSelected(null)}
-          onAdd={() => cart.add(selected)}
+          onAdd={(payload) => {
+            // keep your current behavior: add opens cart and increments
+            if (payload) cart.add(payload as any);
+            else cart.add(selected as any);
+          }}
         />
       )}
     </>
