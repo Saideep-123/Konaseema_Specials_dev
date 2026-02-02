@@ -11,7 +11,7 @@ const WHATSAPP_NUMBER = "7989301401";
 export default function CheckoutPage() {
   const cart = useCart();
 
-  /* ---------------- ADDRESS ---------------- */
+  /* ===== ORIGINAL ADDRESS STATE (UNCHANGED) ===== */
   const [address, setAddress] = useState({
     full_name: "",
     email: "",
@@ -24,19 +24,19 @@ export default function CheckoutPage() {
     country: "India",
   });
 
-  /* ---------------- COUPON ---------------- */
+  /* ===== COUPON STATE ===== */
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
 
-  /* ---------------- TOTALS ---------------- */
+  /* ===== TOTALS ===== */
   const subtotal = cart.items.reduce(
     (s: number, it: any) => s + it.price * it.qty,
     0
   );
   const total = Math.max(0, subtotal - discount);
 
-  /* ---------------- APPLY COUPON ---------------- */
+  /* ===== APPLY COUPON ===== */
   const applyCoupon = async () => {
     setCouponMsg(null);
     setDiscount(0);
@@ -74,7 +74,7 @@ export default function CheckoutPage() {
     setCouponMsg(`Coupon applied (-₹${d})`);
   };
 
-  /* ---------------- PLACE ORDER ---------------- */
+  /* ===== PLACE ORDER (ADDRESS SAME AS BEFORE) ===== */
   const placeOrder = async () => {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) {
@@ -134,13 +134,15 @@ export default function CheckoutPage() {
           <h1 className="text-4xl font-bold mb-8">Checkout</h1>
 
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* ORDER SUMMARY */}
+            {/* ===== ORDER SUMMARY (COUPON ADDED) ===== */}
             <section className="card p-6">
               <h2 className="text-xl font-bold mb-4">Order Summary</h2>
 
               {cart.items.map((it: any) => (
                 <div key={it.id} className="flex justify-between mb-2">
-                  <span>{it.name} × {it.qty}</span>
+                  <span>
+                    {it.name} × {it.qty}
+                  </span>
                   <span>₹{it.price * it.qty}</span>
                 </div>
               ))}
@@ -183,7 +185,7 @@ export default function CheckoutPage() {
               </div>
             </section>
 
-            {/* ADDRESS BLOCK */}
+            {/* ===== ORIGINAL ADDRESS BLOCK (UNCHANGED) ===== */}
             <section className="card p-6">
               <h2 className="text-xl font-bold mb-4">Shipping Address</h2>
 
