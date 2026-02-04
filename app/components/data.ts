@@ -307,10 +307,10 @@ const BASE_PRODUCTS: Array<Omit<ProductWithHighlights, "price">> = [
   },
   {
     id: "p20",
-    name: "Panirulu",
+    name: "Panilu",
     weight: "250g",
     category: "Sweets",
-    image: "/images/Panirulu.jpg",
+    image: "/images/Panilu.jpg",
     highlights: [
       "Traditional sweet bites made for festive occasions",
       "Soft inside with a rich sweet flavor",
@@ -517,12 +517,12 @@ const BASE_PRODUCTS: Array<Omit<ProductWithHighlights, "price">> = [
   },
   {
     id: "p36",
-    name: "Nagaram Gavvalu",
+    name: "Nagaram Garachilu",
     weight: "250g",
     category: "Snacks",
-    image: "/images/Nagaram Gavvalu.jpg",
+    image: "/images/Nagaram garachilu.jpg",
     highlights: [
-      "Crunchy gavvalu snack with traditional spices",
+      "Crunchy garachilu snack with traditional sweet",
       "Crisp bite with homestyle taste",
       "Great for tea-time",
       "Best before: 30–45 days (airtight packed)",
@@ -530,12 +530,12 @@ const BASE_PRODUCTS: Array<Omit<ProductWithHighlights, "price">> = [
   },
   {
     id: "p37",
-    name: "Nylaram Chekkalu",
+    name: "Nagaram Kastha",
     weight: "250g",
     category: "Snacks",
-    image: "/images/Nylaram Chekkalu.jpg",
+    image: "/images/Nagaram Kastha.jpg",
     highlights: [
-      "Chekkalu style snack with authentic flavor",
+      "Rusk style snack with authentic flavor",
       "Crispy and freshly prepared",
       "Perfect for tea-time munching",
       "Best before: 30–45 days (airtight packed)",
