@@ -8,10 +8,10 @@ export const CATEGORIES = [
   "Snacks",
   "Healthy Snacks",
   "Podis",
-  "Oils & Ghee",
+   "Essentials",
   "Veg Pickles",
   "Non-Veg Pickles",
-  "Gift Boxes",
+  "Oils & Ghee",
 ] as const;
 
 export type ProductWithHighlights = Product & { highlights: string[] };
@@ -1306,44 +1306,70 @@ const BASE_PRODUCTS: Array<Omit<ProductWithHighlights, "price">> = [
     ],
   },
 
-  // ---- Gift Boxes
+  // ---- Essentials
   {
-    id: "p96",
-    name: "Sweet Combo Box (Small)",
-    weight: "Assorted",
-    category: "Gift Boxes",
-    image: "/images/Sweet Combo Box (Small).jpg",
-    highlights: [
-      "Assorted sweets selection for gifting",
-      "Perfect for festivals and celebrations",
-      "Neatly packed for safe delivery",
-      "Contents may vary based on availability",
-    ],
-  },
-  {
-    id: "p97",
-    name: "Sweet Combo Box (Medium)",
-    weight: "Assorted",
-    category: "Gift Boxes",
-    image: "/images/Sweet Combo Box (Medium).jpg",
-    highlights: [
-      "Medium assorted sweets hamper",
-      "Ideal for family gifting and festivals",
-      "Hygienic packing with safe delivery",
-      "Contents may vary based on availability",
-    ],
-  },
-  {
-    id: "p98",
-    name: "Festive Gift Hamper",
-    weight: "Assorted",
-    category: "Gift Boxes",
-    image: "/images/Festive Gift Hamper.jpg",
-    highlights: [
-      "Premium festive hamper with assorted items",
-      "Perfect for gifting during celebrations",
-      "Neatly packed for safe delivery",
-      "Contents may vary based on availability",
+id: "p98",
+  name: "Cashew Guddu",
+  weight: "Assorted",
+  category: "Essentials",
+  image: "/images/Cashew Guddu.jpg",
+  highlights: [
+    "Premium quality whole cashew nuts",
+    "Fresh and crunchy texture",
+    "Ideal for daily use and cooking",
+    "Hygienically packed for freshness"
+  ],
+},
+{
+  id: "p99",
+  name: "Cashew Chakka Mukka",
+  weight: "Assorted",
+  category: "Essentials",
+  image: "/images/Cashew Chakka Mukka.jpg",
+  highlights: [
+    "Broken cashew pieces of premium quality",
+    "Perfect for sweets, gravies, and desserts",
+    "Rich in taste and nutrition",
+    "Carefully cleaned and packed"
+  ],
+},
+{
+  id: "p100",
+  name: "Chinthapandu (Tamarind)",
+  weight: "Assorted",
+  category: "Essentials",
+  image: "/images/Chinthapandu.jpg",
+  highlights: [
+    "Natural and seedless tamarind",
+    "Tangy and rich flavor",
+    "Ideal for cooking and chutneys",
+    "Hygienically packed"
+  ],
+},
+{
+  id: "p101",
+  name: "Pasupu (Turmeric Powder)",
+  weight: "Assorted",
+  category: "Essentials",
+  image: "/images/Pasupu.jpg",
+  highlights: [
+    "Pure and natural turmeric powder",
+    "Bright color and strong aroma",
+    "No added preservatives",
+    "Perfect for daily cooking"
+  ],
+},
+{
+  id: "p102",
+  name: "Karam (Chilli Powder)",
+  weight: "Assorted",
+  category: "Essentials",
+  image: "/images/Karam.jpg",
+  highlights: [
+    "Spicy and flavorful chilli powder",
+    "Made from quality dried red chillies",
+    "Adds perfect heat and color to dishes",
+    "Freshly packed for best taste",
     ],
   },
 ];
