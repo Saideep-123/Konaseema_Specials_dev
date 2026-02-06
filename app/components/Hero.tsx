@@ -72,7 +72,7 @@ export default function Hero() {
                 <h3 className="text-3xl mt-1">{special.name}</h3>
                 <div className="opacity-75 mt-1">{special.weight}</div>
               </div>
-              <div className="text-2xl font-bold">₹{special.price}</div>
+              <div className="text-2xl font-bold">${special.price}</div>
             </div>
 
             <img
@@ -90,7 +90,7 @@ export default function Hero() {
                 className="btn-primary w-full bg-green-700 hover:bg-green-800 text-center"
                 target="_blank"
                 href={`https://wa.me/91XXXXXXXXXX?text=${encodeURIComponent(
-                  `Hi Konaseema Foods, I want to order: ${special.name} (${special.weight}) - ₹${special.price}`
+                  `Hi Konaseema Foods, I want to order: ${special.name} (${special.weight}) - ${special.price}`
                 )}`}
               >
                 WhatsApp
